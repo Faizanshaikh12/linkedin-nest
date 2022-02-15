@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from "@nestjs/common";
 import { FeedPost } from "./feed.interface";
 import { FeedService } from "./feed.service";
 import { Observable } from "rxjs";
@@ -10,14 +10,24 @@ export class FeedController {
     private readonly feedService: FeedService
   ) {}
 
+  //
+  // @Get()
+  // findAll(): Observable<FeedPost[]> {
+  //   return this.feedService.findAllPost();
+  // }
+
+  @Get()
+  findSelected(
+    @Query('perPage') perPage = 1,
+    @Query('page') page = 1,
+  ): Observable<FeedPost[]> {
+    perPage = perPage > 20 ? 20 : perPage;
+    return this.feedService.findPosts(perPage, page);
+  }
+
   @Post()
   create(@Body() feedPost: FeedPost): Observable<FeedPost> {
     return this.feedService.createPost(feedPost);
-  }
-
-  @Get()
-  findAll(): Observable<FeedPost[]> {
-    return this.feedService.findAllPost();
   }
 
   @Put(':id')

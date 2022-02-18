@@ -1,9 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards, Request } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, Request, UseGuards } from "@nestjs/common";
 import { FeedPost } from "./feed.interface";
 import { FeedService } from "./feed.service";
 import { Observable } from "rxjs";
 import { DeleteResult, UpdateResult } from "typeorm";
 import { JwtGuard } from "../auth/guards/jwt.guard";
+import { Role } from "../auth/role.enum";
+import { Roles } from "../auth/roles.decorator";
+import { RolesGuard } from "../auth/guards/roles.guard";
 
 @Controller('feed')
 export class FeedController {
@@ -26,7 +29,8 @@ export class FeedController {
     return this.feedService.findPosts(perPage, page);
   }
 
-  @UseGuards(JwtGuard)
+  @Roles(Role.ADMIN, Role.PREMIUM)
+  @UseGuards(JwtGuard, RolesGuard)
   @Post()
   create(@Body() feedPost: FeedPost, @Request() req): Observable<FeedPost> {
     return this.feedService.createPost(req.user, feedPost);

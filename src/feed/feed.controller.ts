@@ -7,6 +7,7 @@ import { JwtGuard } from "../auth/guards/jwt.guard";
 import { Role } from "../auth/role.enum";
 import { Roles } from "../auth/roles.decorator";
 import { RolesGuard } from "../auth/guards/roles.guard";
+import { IsCreatorGuard } from "./guards/is-creator.guard";
 
 @Controller('feed')
 export class FeedController {
@@ -36,6 +37,7 @@ export class FeedController {
     return this.feedService.createPost(req.user, feedPost);
   }
 
+  @UseGuards(JwtGuard, IsCreatorGuard)
   @Put(':id')
   updateOne(
     @Param('id') id: number,
@@ -44,6 +46,7 @@ export class FeedController {
     return this.feedService.updatePost(id, feedPost)
   }
 
+  @UseGuards(JwtGuard, IsCreatorGuard)
   @Delete(':id')
   deleteOne(
     @Param('id') id: number,

@@ -26,7 +26,13 @@ export class FeedService {
     return from(
       this.feedRepository.findAndCount({ take, skip }).then(([posts]) => {
         return <FeedPost[]>posts;
-      }),
+      })
+    );
+  }
+
+  findPostById(id: number): Observable<FeedPost> {
+    return from(
+      this.feedRepository.findOne({ id }, { relations: ["author"] }),
     );
   }
 

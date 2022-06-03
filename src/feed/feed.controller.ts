@@ -20,14 +20,14 @@ export class FeedController {
   // findAll(): Observable<FeedPost[]> {
   //   return this.feedService.findAllPost();
   // }
-
+  @UseGuards(JwtGuard)
   @Get()
-  findSelected(
-    @Query('perPage') perPage = 1,
-    @Query('page') page = 1,
+  getPosts(
+    @Query('take') take = 1,
+    @Query('skip') skip = 1,
   ): Observable<FeedPost[]> {
-    perPage = perPage > 20 ? 20 : perPage;
-    return this.feedService.findPosts(perPage, page);
+    take = take > 20 ? 20 : take;
+    return this.feedService.findPosts(take, skip);
   }
 
   @Roles(Role.ADMIN, Role.PREMIUM)

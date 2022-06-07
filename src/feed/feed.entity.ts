@@ -1,5 +1,5 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { UserEntity } from "../auth/user.entity";
+import { UserEntity } from "../user/user.entity";
 
 @Entity('feed_post')
 export class FeedPostEntity{

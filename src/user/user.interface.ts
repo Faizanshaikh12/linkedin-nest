@@ -1,5 +1,5 @@
-import { Role } from "./role.enum";
-import { FeedPost } from "../feed/feed.interface";
+import { Role } from '../auth/role.enum';
+import { FeedPost } from '../feed/feed.interface';
 
 export interface User {
   id?: number;
@@ -7,6 +7,7 @@ export interface User {
   lastName?: string;
   email?: string;
   password?: string;
+  imagePath?: string;
   role?: Role;
   posts?: FeedPost[];
 }

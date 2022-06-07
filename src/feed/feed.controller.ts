@@ -1,19 +1,29 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, Request, UseGuards } from "@nestjs/common";
-import { FeedPost } from "./feed.interface";
-import { FeedService } from "./feed.service";
-import { Observable } from "rxjs";
-import { DeleteResult, UpdateResult } from "typeorm";
-import { JwtGuard } from "../auth/guards/jwt.guard";
-import { Role } from "../auth/role.enum";
-import { Roles } from "../auth/roles.decorator";
-import { RolesGuard } from "../auth/guards/roles.guard";
-import { IsCreatorGuard } from "./guards/is-creator.guard";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+  Request,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
+import { FeedPost } from './feed.interface';
+import { FeedService } from './feed.service';
+import { Observable } from 'rxjs';
+import { DeleteResult, UpdateResult } from 'typeorm';
+import { JwtGuard } from '../auth/guards/jwt.guard';
+import { Role } from '../auth/role.enum';
+import { Roles } from '../auth/roles.decorator';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { IsCreatorGuard } from './guards/is-creator.guard';
 
 @Controller('feed')
 export class FeedController {
-  constructor(
-    private readonly feedService: FeedService
-  ) {}
+  constructor(private readonly feedService: FeedService) {}
 
   //
   // @Get()
@@ -41,19 +51,20 @@ export class FeedController {
   @Put(':id')
   updateOne(
     @Param('id') id: number,
-    @Body() feedPost: FeedPost
-  ): Observable<UpdateResult>{
-    return this.feedService.updatePost(id, feedPost)
+    @Body() feedPost: FeedPost,
+  ): Observable<UpdateResult> {
+    return this.feedService.updatePost(id, feedPost);
   }
 
   @UseGuards(JwtGuard, IsCreatorGuard)
   @Delete(':id')
-  deleteOne(
-    @Param('id') id: number,
-  ): Observable<DeleteResult>{
-    return this.feedService.deletePost(id)
+  deleteOne(@Param('id') id: number): Observable<DeleteResult> {
+    return this.feedService.deletePost(id);
+  }
+
+  @Get('image:/fileName')
+  findImageByName(@Param('fileName') fileName: string, @Res() res) {
+    if (!fileName || ['null', '[null]'].includes(fileName)) return;
+    return res.sendFile(fileName, { root: './images' });
   }
 }
-
-
-

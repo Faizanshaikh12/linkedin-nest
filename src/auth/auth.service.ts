@@ -1,20 +1,19 @@
-import { Injectable } from "@nestjs/common";
-import { from, map, Observable, switchMap } from "rxjs";
-import * as bcrypt from "bcrypt";
-import { User } from "./user.interface";
-import { InjectRepository } from "@nestjs/typeorm";
-import { UserEntity } from "./user.entity";
-import { Repository } from "typeorm";
-import { JwtService } from "@nestjs/jwt";
+import { Injectable } from '@nestjs/common';
+import { from, map, Observable, switchMap } from 'rxjs';
+import * as bcrypt from 'bcrypt';
+import { User } from '../user/user.interface';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserEntity } from '../user/user.entity';
+import { Repository } from 'typeorm';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
-    private jwtService: JwtService
-  ) {
-  }
+    private jwtService: JwtService,
+  ) {}
 
   hashPassword(password: string): Observable<string> {
     return from(bcrypt.hash(password, 12));
@@ -29,22 +28,27 @@ export class AuthService {
             firstName,
             lastName,
             email,
-            password: hashedPassword
-          })
+            password: hashedPassword,
+          }),
         ).pipe(
           map((user: User) => {
             delete user.password;
             return user;
-          })
+          }),
         );
-      }));
+      }),
+    );
   }
 
   validateUser(email: string, password: string): Observable<User> {
-    return from(this.userRepository.findOne(
-      { email },
-      { select: ["id", "firstName", "lastName", "email", "password", "role"] }
-    )).pipe(
+    return from(
+      this.userRepository.findOne(
+        { email },
+        {
+          select: ['id', 'firstName', 'lastName', 'email', 'password', 'role'],
+        },
+      ),
+    ).pipe(
       switchMap((user: User) =>
         from(bcrypt.compare(password, user.password)).pipe(
           map((isValidPassword: boolean) => {
@@ -52,8 +56,9 @@ export class AuthService {
               delete user.password;
               return user;
             }
-          })
-        ))
+          }),
+        ),
+      ),
     );
   }
 
@@ -65,17 +70,6 @@ export class AuthService {
           //create JWT credentials
           return from(this.jwtService.signAsync({ user }));
         }
-      })
-    );
-  }
-
-  findUserById(id: number): Observable<User>{
-    return from(
-      this.userRepository.findOne({ id }, { relations: ['feedPosts'] }),
-    ).pipe(
-      map((user: User) => {
-        delete user.password;
-        return user;
       }),
     );
   }

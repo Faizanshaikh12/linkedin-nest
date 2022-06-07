@@ -1,8 +1,8 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { Role } from "./role.enum";
-import { FeedPostEntity } from "../feed/feed.entity";
+import { Role } from '../auth/role.enum';
+import { FeedPostEntity } from '../feed/feed.entity';
 
-@Entity("user")
+@Entity('user')
 export class UserEntity {
   @PrimaryGeneratedColumn()
   id: number;
@@ -18,6 +18,9 @@ export class UserEntity {
 
   @Column({ type: "enum", enum: Role, default: Role.USER })
   role: Role;
+
+  @Column({ nullable: true })
+  imagePath: string;
 
   @Column({ select: false })
   password: string;

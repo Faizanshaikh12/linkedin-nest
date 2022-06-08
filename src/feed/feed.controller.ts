@@ -62,7 +62,7 @@ export class FeedController {
     return this.feedService.deletePost(id);
   }
 
-  @Get('image:/fileName')
+    @Get('/image/:fileName')
   findImageByName(@Param('fileName') fileName: string, @Res() res) {
     if (!fileName || ['null', '[null]'].includes(fileName)) return;
     return res.sendFile(fileName, { root: './images' });

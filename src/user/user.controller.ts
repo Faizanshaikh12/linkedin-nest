@@ -26,11 +26,11 @@ export class UserController {
 
   @UseGuards(JwtGuard)
   @Post('upload')
-  @UseInterceptors(FileInterceptor('image', saveImageToStorage))
+  @UseInterceptors(FileInterceptor('file', saveImageToStorage))
   uploadImage(
     @UploadedFile() file: Express.Multer.File,
     @Req() req,
-  ): Observable<UpdateResult | { error: string }> {
+  ): Observable<{ modifiedFileName: string } | { error: string }> {
     const fileName = file?.filename;
     if (!fileName) return of({ error: 'File must be a png, jpg/jpeg' });
     const imagesFolderPath = join(process.cwd(), 'images');
@@ -40,7 +40,13 @@ export class UserController {
       switchMap((isFileLegit: boolean) => {
         if (isFileLegit) {
           const userId = req.user.id;
-          return this.userService.updateUserImageById(userId, fileName);
+          return this.userService.updateUserImageById(userId, fileName).pipe(
+            switchMap(() =>
+              of({
+                modifiedFileName: file.filename,
+              }),
+            ),
+          );
         }
         removeFile(fullImagePath);
       }),
